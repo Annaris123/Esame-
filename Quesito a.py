@@ -27,8 +27,8 @@ file_collegamenti.close()
 lista_id_fermate = list(fermate_con_servizi.keys())
 lista_numero_servizi = [len(fermate_con_servizi[id]) for id in lista_id_fermate]
 
-top_10_id = []     # ID delle fermate con più servizi
-top_10_valori = [] # Numero di servizi corrispondente
+top_10_id = []  # ID delle fermate con più servizi
+top_10_valori = []  # Numero di servizi corrispondente
 
 while len(top_10_id) < 10:
     massimo = max(lista_numero_servizi)
@@ -54,7 +54,8 @@ file_nodi.close()
 nomi_fermate_top = [mappa_id_nome[id] for id in top_10_id]
 
 # Stampa finale, ordinata e chiara
+print("Quesito A")
 print("Le 10 fermate attraversate da più servizi diversi sono:\n")
 for i in range(10):
-    print(str(i+1) + "." + nomi_fermate_top[i], "con", top_10_valori[i], "servizi diversi")
+    print(str(i + 1) + "." + nomi_fermate_top[i], "con", top_10_valori[i], "servizi diversi")
 

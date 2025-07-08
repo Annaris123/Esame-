@@ -1,3 +1,7 @@
+import time
+
+inizio = time.time()
+# Quesito A
 # Apre e legge il file temporale dei collegamenti tra fermate
 file_collegamenti = open("/Users/martaristori/Desktop/Anna/network_temporal_day.csv", "r")
 fermate_con_servizi = {}  # Dizionario: ID fermata → lista dei servizi che la attraversano
@@ -60,6 +64,7 @@ for i in range(10):
     print(str(i + 1) + "." + nomi_fermate_top[i], "con", top_10_valori[i], "servizi diversi")
 
 
+# Quesito B
 def to_float_like(s):
     i = 0
     parte_intera = ""
@@ -169,9 +174,12 @@ print("Quesito B")
 print("Coppia di fermate consecutive con il rapporto distanza/tempo più alto:")
 print("Da ", id_partenza, " a ", id_arrivo)
 
+
+# Quesito C \riguardalo perchè potrebbe non essere corretto
 def leggi_file(percorso):
     with open(percorso, "r") as f:
         return f.readlines()[1:]  # salta intestazione
+
 
 def carica_fermate(righe):
     diz = {}
@@ -189,10 +197,12 @@ def carica_fermate(righe):
                 diz[id_fermata] = (nome, x, y)
     return diz
 
+
 def distanza(p1, p2):
     dx = p1[0] - p2[0]
     dy = p1[1] - p2[1]
     return (dx * dx + dy * dy) ** 0.5
+
 
 def carica_percorsi(righe):
     percorsi = {}
@@ -246,6 +256,7 @@ def calcola_distanze(percorsi, fermate):
         distanze[bus] = somma
     return distanze
 
+
 def trova_bus_max(distanze):
     massimo = None
     valore_massimo = float('-inf')
@@ -271,6 +282,7 @@ def stampa_percorso(bus, percorsi, fermate, distanze):
             nome_fermata = "Fermata sconosciuta (", id_fermata, ")"
         print("- ", nome_fermata)
 
+
 def main():
     righe_fermate = leggi_file("/Users/martaristori/Desktop/Anna/network_nodes.csv")
     righe_percorsi = leggi_file("/Users/martaristori/Desktop/Anna/network_temporal_day.csv")
@@ -281,4 +293,123 @@ def main():
     bus = trova_bus_max(distanze)
     stampa_percorso(bus, percorsi, fermate, distanze)
 
+
 main()
+
+print("")
+print("Quesito D")
+
+
+# Quesito D \riguarda nomi e codice
+def conta_luoghi_unici_giorno():
+    luoghi = []
+    file = open("/Users/martaristori/Desktop/Anna/network_temporal_day.csv", "r")
+    righe = file.readlines()
+    file.close()
+
+    intestazione = righe[0].strip().split(",")
+    indice_source = intestazione.index("from_stop_I")
+    indice_target = intestazione.index("to_stop_I")
+
+    for riga in righe[1:]:
+        valori = riga.strip().split(",")
+        if len(valori) > max(indice_source, indice_target):
+            source = valori[indice_source]
+            target = valori[indice_target]
+
+            if source not in luoghi:
+                luoghi = luoghi + [source]
+            if target not in luoghi:
+                luoghi = luoghi + [target]
+
+    print("Numero di luoghi in network_temporal_day:", len(luoghi))
+
+
+print("")
+
+
+def conta_luoghi_unici_settimana():
+    luoghi = []
+    file = open("/Users/martaristori/Desktop/Anna/network_temporal_week.csv", "r")
+    righe = file.readlines()
+    file.close()
+
+    intestazione = righe[0].strip().split(";")  # QUI CAMBIATO
+    indice_source = intestazione.index("from_stop_I")
+    indice_target = intestazione.index("to_stop_I")
+
+    for riga in righe[1:]:
+        valori = riga.strip().split(";")  # QUI CAMBIATO
+        if len(valori) > max(indice_source, indice_target):
+            source = valori[indice_source]
+            target = valori[indice_target]
+
+            if source not in luoghi:
+                luoghi = luoghi + [source]
+            if target not in luoghi:
+                luoghi = luoghi + [target]
+
+    print("Numero di luoghi in network_temporal_week:", len(luoghi))
+
+
+# Chiamata delle funzioni
+conta_luoghi_unici_giorno()
+conta_luoghi_unici_settimana()
+
+print("")
+
+
+def conta_collegamenti_diretti_giorno():
+    collegamenti = []
+    file = open("/Users/martaristori/Desktop/Anna/network_temporal_day.csv", "r")
+    righe = file.readlines()
+    file.close()
+
+    intestazione = righe[0].strip().split(",")
+    indice_source = intestazione.index("from_stop_I")
+    indice_target = intestazione.index("to_stop_I")
+
+    for riga in righe[1:]:
+        valori = riga.strip().split(",")
+        if len(valori) > max(indice_source, indice_target):
+            source = valori[indice_source]
+            target = valori[indice_target]
+            coppia = (source, target)
+
+            if coppia not in collegamenti:
+                collegamenti += [coppia]
+
+    print("Collegamenti network_temporal_day:", len(collegamenti))
+
+
+def conta_collegamenti_diretti_settimana():
+    collegamenti = []
+    file = open("/Users/martaristori/Desktop/Anna/network_temporal_week.csv", "r")
+    righe = file.readlines()
+    file.close()
+
+    intestazione = righe[0].strip().split(";")  # attenzione al separatore
+    indice_source = intestazione.index("from_stop_I")
+    indice_target = intestazione.index("to_stop_I")
+
+    for riga in righe[1:]:
+        valori = riga.strip().split(";")
+        if len(valori) > max(indice_source, indice_target):
+            source = valori[indice_source]
+            target = valori[indice_target]
+            coppia = (source, target)
+
+            if coppia not in collegamenti:
+                collegamenti += [coppia]
+
+    print("Collegamenti network_temporal_week:", len(collegamenti))
+
+
+# Chiamata delle due funzioni
+conta_collegamenti_diretti_giorno()
+conta_collegamenti_diretti_settimana()
+
+fine = time.time()
+
+risultato = fine - inizio
+print(risultato)

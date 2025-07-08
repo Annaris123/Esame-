@@ -102,7 +102,4 @@ f2.close()
 
 # Stampa finale
 print("Coppia di fermate consecutive con il rapporto distanza/tempo più alto:")
-print("Da: ", id_partenza, " → ", id_arrivo)
-print("Distanza:", round(distanza_massima, 2), "unità")
-print("Tempo:", round(tempo_massimo, 2), "minuti")
-print("Rapporto distanza/tempo:", round(massimo, 4), "unità/minuto")
+print("Da ", id_partenza, " a ", id_arrivo)

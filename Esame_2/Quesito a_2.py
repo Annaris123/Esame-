@@ -63,12 +63,12 @@ def id_nome(nodes):
     return nome
 
 
-def stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata):
+def stampa_top_fermate(fermate_top, n_servizi_fermata, id_nome_fermata):
     print("Le 10 fermate attraversate da più servizi diversi sono:\n")
     for i in range(10):
         fid = fermate_top[i]
         servizi = n_servizi_fermata[i]
-        nome = id_name_fermata.get(fid, "Errore")
+        nome = id_nome_fermata.get(fid, "Errore")
         print(str(i + 1) + ". " + nome + " con " + str(servizi) + " servizi diversi")
 
 
@@ -79,7 +79,7 @@ percorso_nodi = "/Users/martaristori/Desktop/Anna/network_nodes.csv"
 # Elaborazione
 fermate_servizi = collegamenti(percorso_collegamenti)
 fermate_top, n_servizi_fermata = top_fermate(fermate_servizi)
-id_name_fermata = id_nome(percorso_nodi)
+id_nome_fermata = id_nome(percorso_nodi)
 
 # Output
-stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata)
+stampa_top_fermate(fermate_top, n_servizi_fermata, id_nome_fermata)

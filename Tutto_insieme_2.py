@@ -1,4 +1,8 @@
-# riguarda per bene i nomi
+import time
+
+start_tot = time.time()
+start = time.time()
+
 print("Quesito A:")
 print("")
 
@@ -64,12 +68,12 @@ def id_nome(nodes):
     return nome
 
 
-def stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata):
+def stampa_top_fermate(fermate_top, n_servizi_fermata, id_nome_fermata):
     print("Le 10 fermate attraversate da più servizi diversi sono:\n")
     for i in range(10):
         fid = fermate_top[i]
         servizi = n_servizi_fermata[i]
-        nome = id_name_fermata.get(fid, "Errore")
+        nome = id_nome_fermata.get(fid, "Errore")
         print(str(i + 1) + ". " + nome + " con " + str(servizi) + " servizi diversi")
 
 
@@ -80,10 +84,10 @@ percorso_nodi = "/Users/martaristori/Desktop/Anna/network_nodes.csv"
 # Elaborazione
 fermate_servizi = collegamenti(percorso_collegamenti)
 fermate_top, n_servizi_fermata = top_fermate(fermate_servizi)
-id_name_fermata = id_nome(percorso_nodi)
+id_nome_fermata = id_nome(percorso_nodi)
 
 # Output
-stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata)
+stampa_top_fermate(fermate_top, n_servizi_fermata, id_nome_fermata)
 
 print("")
 print("Quesito B:")
@@ -126,26 +130,26 @@ def numero_float(s):
     return intero + decimale / base if base > 1 else intero
 
 
-def leggi_fermate(percorso):
+def leggi_fermate(nodes):
     fermate = {}  # ID -> (x, y)
     nomi = {}  # ID -> nome
 
-    file = open(percorso, "r")
+    file = open(nodes, "r")
     riga = file.readline()
 
     while riga != "":
-        valori = riga.strip().split(",")
-        if len(valori) >= 4:
-            idf = valori[0]
-            nome = valori[1]
-            x_str = valori[2]
-            y_str = valori[3]
+        estrai = riga.strip().split(",")
+        if len(estrai) >= 4:
+            id = estrai[0]
+            nome = estrai[3]
+            latitudine = estrai[1]
+            longitudine = estrai[2]
 
-            x = numero_float(x_str)
-            y = numero_float(y_str)
+            lat = numero_float(latitudine)
+            lon = numero_float(longitudine)
 
-            fermate[idf] = (x, y)
-            nomi[idf] = nome
+            fermate[id] = (lat, lon)
+            nomi[id] = nome
 
         riga = file.readline()
 
@@ -153,31 +157,31 @@ def leggi_fermate(percorso):
     return fermate, nomi
 
 
-def leggi_tempi(percorso, fermate):
+def leggi_tempi(temporal_day, fermate):
     massimo = -1
     id_partenza = ""
     id_arrivo = ""
     tempo_massimo = 0
     distanza_massima = 0
 
-    file_2 = open(percorso, "r")
-    riga = file_2.readline()
+    file = open(temporal_day, "r")
+    riga = (file.readline())
 
     while riga != "":
-        valori = riga.strip().split(",")
-        if len(valori) >= 4:
-            id_1 = valori[0]
-            id_2 = valori[1]
-            t1_str = valori[2]
-            t2_str = valori[3]
+        estrai = riga.strip().split(",")
+        if len(estrai) >= 4:
+            from_stop = estrai[0]
+            to_stop = estrai[1]
+            dep_time = estrai[2]
+            arr_time = estrai[3]
 
-            t1 = numero_float(t1_str)
-            t2 = numero_float(t2_str)
-            tempo = t2 - t1
+            dep = numero_float(dep_time)
+            arr = numero_float(arr_time)
+            tempo = arr - dep
 
-            if id_1 in fermate and id_2 in fermate and tempo > 0:
-                x1, y1 = fermate[id_1]
-                x2, y2 = fermate[id_2]
+            if from_stop in fermate and to_stop in fermate and tempo > 0:
+                x1, y1 = fermate[from_stop]
+                x2, y2 = fermate[to_stop]
 
                 dx = x2 - x1
                 dy = y2 - y1
@@ -187,14 +191,14 @@ def leggi_tempi(percorso, fermate):
 
                 if rapporto > massimo:
                     massimo = rapporto
-                    id_partenza = id_1
-                    id_arrivo = id_2
+                    id_partenza = from_stop
+                    id_arrivo = to_stop
                     tempo_massimo = tempo
                     distanza_massima = distanza
 
-        riga = file_2.readline()
+        riga = file.readline()
 
-    file_2.close()
+    file.close()
     return id_partenza, id_arrivo, tempo_massimo, distanza_massima, massimo
 
 
@@ -218,14 +222,14 @@ print("")
 
 
 def leggi_fermate(percorso_file):
-    dizionario_fermate = {}
+    fermate = {}
     file = open(percorso_file, 'r')
     righe = file.readlines()
     file.close()
 
     if len(righe) == 0:
-        print("File fermate vuoto!")
-        return dizionario_fermate
+        print("Errore")
+        return fermate
 
     intestazione = righe[0].strip()
     separatore = ';'
@@ -276,11 +280,11 @@ def leggi_fermate(percorso_file):
             if lat_valida == 1 and lon_valida == 1:
                 latitudine = numero_float(lat)
                 longitudine = numero_float(lon)
-                dizionario_fermate[id_fermata] = (latitudine, longitudine, nome)
+                fermate[id_fermata] = (latitudine, longitudine, nome)
 
         riga_corrente = riga_corrente + 1
 
-    return dizionario_fermate
+    return fermate
 
 
 def leggi_viaggi_bus(percorso_file):
@@ -291,7 +295,7 @@ def leggi_viaggi_bus(percorso_file):
     file.close()
 
     if len(righe) == 0:
-        print("File viaggi vuoto!")
+        print("Errore")
         return viaggi
 
     intestazione = righe[0].strip()
@@ -476,6 +480,8 @@ def main():
 
 main()
 
+end = time.time()
+
 print("")
 print("Quesito D:")
 print("")
@@ -528,14 +534,26 @@ def n_collegamenti(percorso, separatore, nome):
 
 
 # Percorsi dei file CSV
+
 network_temporal_day = "/Users/martaristori/Desktop/Anna/network_temporal_day.csv"
+
 network_temporal_week = "/Users/martaristori/Desktop/Anna/network_temporal_week.csv"
 
-# Chiamate alle funzioni
+# Tempo per network_temporal_day
+start_day = time.time()
 n_fermate(network_temporal_day, ",", "network_temporal_day")
-n_fermate(network_temporal_week, ";", "network_temporal_week")
+n_collegamenti(network_temporal_day, ",", "network_temporal_day")
+end_day = time.time()
 
 print("")
 
-n_collegamenti(network_temporal_day, ",", "network_temporal_day")
+# Tempo per network_temporal_week
+start_week = time.time()
+n_fermate(network_temporal_week, ";", "network_temporal_week")
 n_collegamenti(network_temporal_week, ";", "network_temporal_week")
+end_week = time.time()
+
+end_tot = time.time()
+print("Tempo risposte A, B, C: ", end - start)
+print("Tempi risposta D:", (end_day - start_day), "e", (end_week - start_week))
+print("t_tot: ", end_tot - start_tot)

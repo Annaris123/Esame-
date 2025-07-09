@@ -1,7 +1,5 @@
 import time
 
-inizio = time.time()
-
 print("Quesito D:")
 print("")
 
@@ -56,15 +54,19 @@ def n_collegamenti(percorso, separatore, nome):
 network_temporal_day = "/Users/martaristori/Desktop/Anna/network_temporal_day.csv"
 network_temporal_week = "/Users/martaristori/Desktop/Anna/network_temporal_week.csv"
 
-# Chiamate alle funzioni
+# Tempo per network_temporal_day
+start_day = time.time()
 n_fermate(network_temporal_day, ",", "network_temporal_day")
-n_fermate(network_temporal_week, ";", "network_temporal_week")
-
-print("")
-
 n_collegamenti(network_temporal_day, ",", "network_temporal_day")
-n_collegamenti(network_temporal_week, ";", "network_temporal_week")
+end_day = time.time()
 
-fine = time.time()
 print("")
-print("Tempo impiegato:", fine - inizio, "secondi")
+
+# Tempo per network_temporal_week
+start_week = time.time()
+n_fermate(network_temporal_week, ";", "network_temporal_week")
+n_collegamenti(network_temporal_week, ";", "network_temporal_week")
+end_week = time.time()
+
+# Stampa risultati
+print("Tempi risposta D:", (end_day - start_day), "e", (end_week - start_week))

@@ -153,15 +153,15 @@ def leggi_viaggi_bus(percorso_file):
                 a_fermata = parti[colonne['to_stop_I']]
                 numero_seq = parti[colonne['seq']].strip()
 
-                è_numero = True
+                numero = True
                 j = 0
                 while j < len(numero_seq):
                     c = numero_seq[j]
                     if c < '0' or c > '9':
-                        è_numero = False
+                        numero = False
                     j = j + 1
 
-                if è_numero == True:
+                if numero == True:
                     numero_seq_intero = int(numero_seq)
 
                     # se non esiste ancora la lista, la crea

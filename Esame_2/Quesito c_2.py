@@ -1,22 +1,23 @@
 print("Quesito C:")
 print("")
 
-def to_float_like(s):
+
+def numero_float(s):
     parte_intera = ""
     parte_decimale = ""
     punto_trovato = False
 
     # Costruzione delle due parti
-    for c in s:
-        if c == "." and not punto_trovato:
+    for punto in s:
+        if punto == "." and not punto_trovato:
             punto_trovato = True
-        elif c >= "0" and c <= "9":
+        elif punto >= "0" and punto <= "9":
             if not punto_trovato:
-                parte_intera += c
+                parte_intera += punto
             else:
-                parte_decimale += c
+                parte_decimale += punto
 
-    # Mappa da cifra-carattere a numero
+    # Crea un dizionario che associa le cifre come stringhe ai loro valori numerici
     cifre = {
         "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
         "5": 5, "6": 6, "7": 7, "8": 8, "9": 9
@@ -24,28 +25,28 @@ def to_float_like(s):
 
     # Conversione parte intera
     intero = 0
-    for c in parte_intera:
-        intero = intero * 10 + cifre[c]
+    for converte in parte_intera:
+        intero = intero * 10 + cifre[converte]
 
     # Conversione parte decimale
     decimale = 0
     base = 1
-    for c in parte_decimale:
-        decimale = decimale * 10 + cifre[c]
+    for converte in parte_decimale:
+        decimale = decimale * 10 + cifre[converte]
         base *= 10
 
     return intero + decimale / base if base > 1 else intero
 
 
 def leggi_fermate(percorso_file):
-    dizionario_fermate = {}
+    fermate = {}
     file = open(percorso_file, 'r')
     righe = file.readlines()
     file.close()
 
     if len(righe) == 0:
-        print("File fermate vuoto!")
-        return dizionario_fermate
+        print("Errore")
+        return fermate
 
     intestazione = righe[0].strip()
     separatore = ';'
@@ -94,13 +95,13 @@ def leggi_fermate(percorso_file):
                 indice_carattere = indice_carattere + 1
 
             if lat_valida == 1 and lon_valida == 1:
-                latitudine = to_float_like(lat)
-                longitudine = to_float_like(lon)
-                dizionario_fermate[id_fermata] = (latitudine, longitudine, nome)
+                latitudine = numero_float(lat)
+                longitudine = numero_float(lon)
+                fermate[id_fermata] = (latitudine, longitudine, nome)
 
         riga_corrente = riga_corrente + 1
 
-    return dizionario_fermate
+    return fermate
 
 
 def leggi_viaggi_bus(percorso_file):
@@ -111,7 +112,7 @@ def leggi_viaggi_bus(percorso_file):
     file.close()
 
     if len(righe) == 0:
-        print("File viaggi vuoto!")
+        print("Errore")
         return viaggi
 
     intestazione = righe[0].strip()

@@ -1,10 +1,9 @@
-#riguarda per bene i nomi
+# riguarda per bene i nomi
 print("Quesito A:")
 print("")
 
 
 def collegamenti(temporal_day):
-    """Legge il file dei collegamenti e restituisce un dizionario ID fermata = lista di servizi."""
     file = open(temporal_day, "r")
     fermate_servizi = {}
 
@@ -32,85 +31,81 @@ def collegamenti(temporal_day):
 
 
 def top_fermate(fermate_servizi, top_n=10):
-    """Restituisce le top N fermate con il maggior numero di servizi diversi."""
-    lista_id_fermate = list(fermate_servizi.keys())
-    lista_numero_servizi = [len(fermate_servizi[id]) for id in lista_id_fermate]
+    id_fermate = list(fermate_servizi.keys())
+    numero_servizi = [len(fermate_servizi[id]) for id in id_fermate]
 
-    top_id = []
-    top_valori = []
+    top_fermate = []  # Lista vuota per salvare le top fermate
+    top_servizi = []  # Lista vuota per salvare il numero di servizi
 
-    while len(top_id) < top_n:
-        massimo = max(lista_numero_servizi)
-        indice_massimo = lista_numero_servizi.index(massimo)
-        id_top = lista_id_fermate[indice_massimo]
+    while len(top_fermate) < top_n:
+        massimo = max(numero_servizi)  # Trova il massimo numero di servizi nella lista
+        indice_massimo = numero_servizi.index(massimo)
+        id_top = id_fermate[indice_massimo]  # Ottiene l'indice relativo per trovare l'ID della fermata corrispondente
 
-        top_id.append(id_top)
-        top_valori.append(massimo)
+        # Aggiunge l'ID e il numero di servizi alle liste top_id e top_valori
+        top_fermate.append(id_top)
+        top_servizi.append(massimo)
 
-        lista_numero_servizi[indice_massimo] = 0  # Evita riutilizzo dello stesso indice
+        numero_servizi[indice_massimo] = 0  # Imposta quel valore a 0 per non riutilizzarlo nel prossimo ciclo
 
-    return top_id, top_valori
+    return top_fermate, top_servizi  # Restituisce le due liste: ID delle fermate top e numero di servizi corrispondenti
 
 
-def leggi_mappa_id_nome(file_path):
-    """Legge il file dei nodi e restituisce un dizionario ID = nome fermata."""
-    file = open(file_path, "r")
-    mappa_id_nome = {}
+def id_nome(nodes):
+    file = open(nodes, "r")
+    nome = {}
 
     file.readline()  # Salta intestazione
     for riga in file:
         campi = riga.strip().split(",")
-        mappa_id_nome[campi[0]] = campi[3]
+        nome[campi[0]] = campi[3]
 
     file.close()
-    return mappa_id_nome
+    return nome
 
 
-def stampa_top_fermate(top_ids, top_valori, id_to_name):
-    """Stampa le top fermate in modo ordinato e chiaro."""
+def stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata):
     print("Le 10 fermate attraversate da più servizi diversi sono:\n")
     for i in range(10):
-        fid = top_ids[i]
-        servizi = top_valori[i]
-        nome = id_to_name.get(fid, "Nome non trovato")
+        fid = fermate_top[i]
+        servizi = n_servizi_fermata[i]
+        nome = id_name_fermata.get(fid, "Errore")
         print(str(i + 1) + ". " + nome + " con " + str(servizi) + " servizi diversi")
 
-
-# === Corpo principale ===
 
 # Percorsi dei file
 percorso_collegamenti = "/Users/martaristori/Desktop/Anna/network_temporal_day.csv"
 percorso_nodi = "/Users/martaristori/Desktop/Anna/network_nodes.csv"
 
 # Elaborazione
-fermate_con_servizi = collegamenti(percorso_collegamenti)
-top_ids, top_valori = top_fermate(fermate_con_servizi)
-id_to_name = leggi_mappa_id_nome(percorso_nodi)
+fermate_servizi = collegamenti(percorso_collegamenti)
+fermate_top, n_servizi_fermata = top_fermate(fermate_servizi)
+id_name_fermata = id_nome(percorso_nodi)
 
 # Output
-stampa_top_fermate(top_ids, top_valori, id_to_name)
+stampa_top_fermate(fermate_top, n_servizi_fermata, id_name_fermata)
 
 print("")
 print("Quesito B:")
 print("")
 
 
-def to_float_like(s):
+def numero_float(s):
     parte_intera = ""
     parte_decimale = ""
     punto_trovato = False
 
     # Costruzione delle due parti
-    for c in s:
-        if c == "." and not punto_trovato:
+    for punto in s:
+        if punto == "." and not punto_trovato:
             punto_trovato = True
-        elif c >= "0" and c <= "9":
+        elif punto >= "0" and punto <= "9":
             if not punto_trovato:
-                parte_intera += c
+                parte_intera += punto
             else:
-                parte_decimale += c
+                parte_decimale += punto
 
-    # Mappa da cifra-carattere a numero
+    # Crea un dizionario che associa le cifre come stringhe ai loro valori numerici
     cifre = {
         "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
         "5": 5, "6": 6, "7": 7, "8": 8, "9": 9
@@ -118,14 +113,14 @@ def to_float_like(s):
 
     # Conversione parte intera
     intero = 0
-    for c in parte_intera:
-        intero = intero * 10 + cifre[c]
+    for converte in parte_intera:
+        intero = intero * 10 + cifre[converte]
 
     # Conversione parte decimale
     decimale = 0
     base = 1
-    for c in parte_decimale:
-        decimale = decimale * 10 + cifre[c]
+    for converte in parte_decimale:
+        decimale = decimale * 10 + cifre[converte]
         base *= 10
 
     return intero + decimale / base if base > 1 else intero
@@ -135,8 +130,8 @@ def leggi_fermate(percorso):
     fermate = {}  # ID -> (x, y)
     nomi = {}  # ID -> nome
 
-    f = open(percorso, "r")
-    riga = f.readline()
+    file = open(percorso, "r")
+    riga = file.readline()
 
     while riga != "":
         valori = riga.strip().split(",")
@@ -146,15 +141,15 @@ def leggi_fermate(percorso):
             x_str = valori[2]
             y_str = valori[3]
 
-            x = to_float_like(x_str)
-            y = to_float_like(y_str)
+            x = numero_float(x_str)
+            y = numero_float(y_str)
 
             fermate[idf] = (x, y)
             nomi[idf] = nome
 
-        riga = f.readline()
+        riga = file.readline()
 
-    f.close()
+    file.close()
     return fermate, nomi
 
 
@@ -165,24 +160,24 @@ def leggi_tempi(percorso, fermate):
     tempo_massimo = 0
     distanza_massima = 0
 
-    f2 = open(percorso, "r")
-    riga = f2.readline()
+    file_2 = open(percorso, "r")
+    riga = file_2.readline()
 
     while riga != "":
         valori = riga.strip().split(",")
         if len(valori) >= 4:
-            id1 = valori[0]
-            id2 = valori[1]
+            id_1 = valori[0]
+            id_2 = valori[1]
             t1_str = valori[2]
             t2_str = valori[3]
 
-            t1 = to_float_like(t1_str)
-            t2 = to_float_like(t2_str)
+            t1 = numero_float(t1_str)
+            t2 = numero_float(t2_str)
             tempo = t2 - t1
 
-            if id1 in fermate and id2 in fermate and tempo > 0:
-                x1, y1 = fermate[id1]
-                x2, y2 = fermate[id2]
+            if id_1 in fermate and id_2 in fermate and tempo > 0:
+                x1, y1 = fermate[id_1]
+                x2, y2 = fermate[id_2]
 
                 dx = x2 - x1
                 dy = y2 - y1
@@ -192,14 +187,14 @@ def leggi_tempi(percorso, fermate):
 
                 if rapporto > massimo:
                     massimo = rapporto
-                    id_partenza = id1
-                    id_arrivo = id2
+                    id_partenza = id_1
+                    id_arrivo = id_2
                     tempo_massimo = tempo
                     distanza_massima = distanza
 
-        riga = f2.readline()
+        riga = file_2.readline()
 
-    f2.close()
+    file_2.close()
     return id_partenza, id_arrivo, tempo_massimo, distanza_massima, massimo
 
 
@@ -279,8 +274,8 @@ def leggi_fermate(percorso_file):
                 indice_carattere = indice_carattere + 1
 
             if lat_valida == 1 and lon_valida == 1:
-                latitudine = to_float_like(lat)
-                longitudine = to_float_like(lon)
+                latitudine = numero_float(lat)
+                longitudine = numero_float(lon)
                 dizionario_fermate[id_fermata] = (latitudine, longitudine, nome)
 
         riga_corrente = riga_corrente + 1
@@ -486,10 +481,8 @@ print("Quesito D:")
 print("")
 
 
-def fermate(percorso, separatore, nome):
-    """
-    Conta il numero di fermate uniche presenti nel file CSV.
-    """
+def n_fermate(percorso, separatore, nome):
+    # Conta il numero di fermate uniche presenti nel file CSV.
     fermate = set()
 
     file = open(percorso, "r")
@@ -501,20 +494,19 @@ def fermate(percorso, separatore, nome):
     indice_arrivo = intestazione.index("to_stop_I")
 
     for riga in righe[1:]:
-        valori = riga.strip().split(separatore)
-        if len(valori) > max(indice_partenza, indice_arrivo):
-            partenza = valori[indice_partenza]
-            arrivo = valori[indice_arrivo]
+        estrai = riga.strip().split(separatore)
+        if len(estrai) > max(indice_partenza, indice_arrivo):
+            partenza = estrai[indice_partenza]
+            arrivo = estrai[indice_arrivo]
             fermate.add(partenza)
             fermate.add(arrivo)
 
     print("Numero di fermate uniche in " + nome + ": " + str(len(fermate)))
 
 
-def collegamenti(percorso, separatore, nome):
-    """
-    Conta il numero di collegamenti diretti unici tra fermate.
-    """
+def n_collegamenti(percorso, separatore, nome):
+    # Conta il numero di collegamenti diretti unici tra fermate.
+
     collegamenti = set()
 
     file = open(percorso, "r")
@@ -540,9 +532,10 @@ network_temporal_day = "/Users/martaristori/Desktop/Anna/network_temporal_day.cs
 network_temporal_week = "/Users/martaristori/Desktop/Anna/network_temporal_week.csv"
 
 # Chiamate alle funzioni
-fermate(network_temporal_day, ",", "network_temporal_day")
-fermate(network_temporal_week, ";", "network_temporal_week")
-print("")
-collegamenti(network_temporal_day, ",", "network_temporal_day")
-collegamenti(network_temporal_week, ";", "network_temporal_week")
+n_fermate(network_temporal_day, ",", "network_temporal_day")
+n_fermate(network_temporal_week, ";", "network_temporal_week")
 
+print("")
+
+n_collegamenti(network_temporal_day, ",", "network_temporal_day")
+n_collegamenti(network_temporal_week, ";", "network_temporal_week")

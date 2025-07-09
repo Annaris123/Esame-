@@ -2,22 +2,22 @@ print("Quesito B:")
 print("")
 
 
-def to_float_like(s):
+def numero_float(s):
     parte_intera = ""
     parte_decimale = ""
     punto_trovato = False
 
     # Costruzione delle due parti
-    for c in s:
-        if c == "." and not punto_trovato:
+    for punto in s:
+        if punto == "." and not punto_trovato:
             punto_trovato = True
-        elif c >= "0" and c <= "9":
+        elif punto >= "0" and punto <= "9":
             if not punto_trovato:
-                parte_intera += c
+                parte_intera += punto
             else:
-                parte_decimale += c
+                parte_decimale += punto
 
-    # Mappa da cifra-carattere a numero
+    # Crea un dizionario che associa le cifre come stringhe ai loro valori numerici
     cifre = {
         "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
         "5": 5, "6": 6, "7": 7, "8": 8, "9": 9
@@ -25,14 +25,14 @@ def to_float_like(s):
 
     # Conversione parte intera
     intero = 0
-    for c in parte_intera:
-        intero = intero * 10 + cifre[c]
+    for converte in parte_intera:
+        intero = intero * 10 + cifre[converte]
 
     # Conversione parte decimale
     decimale = 0
     base = 1
-    for c in parte_decimale:
-        decimale = decimale * 10 + cifre[c]
+    for converte in parte_decimale:
+        decimale = decimale * 10 + cifre[converte]
         base *= 10
 
     return intero + decimale / base if base > 1 else intero
@@ -42,8 +42,8 @@ def leggi_fermate(percorso):
     fermate = {}  # ID -> (x, y)
     nomi = {}  # ID -> nome
 
-    f = open(percorso, "r")
-    riga = f.readline()
+    file = open(percorso, "r")
+    riga = file.readline()
 
     while riga != "":
         valori = riga.strip().split(",")
@@ -53,15 +53,15 @@ def leggi_fermate(percorso):
             x_str = valori[2]
             y_str = valori[3]
 
-            x = to_float_like(x_str)
-            y = to_float_like(y_str)
+            x = numero_float(x_str)
+            y = numero_float(y_str)
 
             fermate[idf] = (x, y)
             nomi[idf] = nome
 
-        riga = f.readline()
+        riga = file.readline()
 
-    f.close()
+    file.close()
     return fermate, nomi
 
 
@@ -72,24 +72,24 @@ def leggi_tempi(percorso, fermate):
     tempo_massimo = 0
     distanza_massima = 0
 
-    f2 = open(percorso, "r")
-    riga = f2.readline()
+    file_2 = open(percorso, "r")
+    riga = file_2.readline()
 
     while riga != "":
         valori = riga.strip().split(",")
         if len(valori) >= 4:
-            id1 = valori[0]
-            id2 = valori[1]
+            id_1 = valori[0]
+            id_2 = valori[1]
             t1_str = valori[2]
             t2_str = valori[3]
 
-            t1 = to_float_like(t1_str)
-            t2 = to_float_like(t2_str)
+            t1 = numero_float(t1_str)
+            t2 = numero_float(t2_str)
             tempo = t2 - t1
 
-            if id1 in fermate and id2 in fermate and tempo > 0:
-                x1, y1 = fermate[id1]
-                x2, y2 = fermate[id2]
+            if id_1 in fermate and id_2 in fermate and tempo > 0:
+                x1, y1 = fermate[id_1]
+                x2, y2 = fermate[id_2]
 
                 dx = x2 - x1
                 dy = y2 - y1
@@ -99,14 +99,14 @@ def leggi_tempi(percorso, fermate):
 
                 if rapporto > massimo:
                     massimo = rapporto
-                    id_partenza = id1
-                    id_arrivo = id2
+                    id_partenza = id_1
+                    id_arrivo = id_2
                     tempo_massimo = tempo
                     distanza_massima = distanza
 
-        riga = f2.readline()
+        riga = file_2.readline()
 
-    f2.close()
+    file_2.close()
     return id_partenza, id_arrivo, tempo_massimo, distanza_massima, massimo
 
 

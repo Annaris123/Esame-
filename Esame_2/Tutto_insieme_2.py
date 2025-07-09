@@ -3,10 +3,10 @@ print("Quesito A:")
 print("")
 
 
-def leggi_collegamenti(file_path):
-    """Legge il file dei collegamenti e restituisce un dizionario ID fermata → lista di servizi."""
-    file = open(file_path, "r")
-    fermate_con_servizi = {}
+def collegamenti(temporal_day):
+    """Legge il file dei collegamenti e restituisce un dizionario ID fermata = lista di servizi."""
+    file = open(temporal_day, "r")
+    fermate_servizi = {}
 
     file.readline()  # Salta intestazione
     for riga in file:
@@ -16,25 +16,25 @@ def leggi_collegamenti(file_path):
         servizio = campi[4]
 
         # Aggiungi servizio alla fermata di partenza
-        if id_partenza not in fermate_con_servizi:
-            fermate_con_servizi[id_partenza] = [servizio]
-        elif servizio not in fermate_con_servizi[id_partenza]:
-            fermate_con_servizi[id_partenza].append(servizio)
+        if id_partenza not in fermate_servizi:
+            fermate_servizi[id_partenza] = [servizio]
+        elif servizio not in fermate_servizi[id_partenza]:
+            fermate_servizi[id_partenza].append(servizio)
 
         # Aggiungi servizio alla fermata di arrivo
-        if id_arrivo not in fermate_con_servizi:
-            fermate_con_servizi[id_arrivo] = [servizio]
-        elif servizio not in fermate_con_servizi[id_arrivo]:
-            fermate_con_servizi[id_arrivo].append(servizio)
+        if id_arrivo not in fermate_servizi:
+            fermate_servizi[id_arrivo] = [servizio]
+        elif servizio not in fermate_servizi[id_arrivo]:
+            fermate_servizi[id_arrivo].append(servizio)
 
     file.close()
-    return fermate_con_servizi
+    return fermate_servizi
 
 
-def trova_top_fermate(fermate_con_servizi, top_n=10):
+def top_fermate(fermate_servizi, top_n=10):
     """Restituisce le top N fermate con il maggior numero di servizi diversi."""
-    lista_id_fermate = list(fermate_con_servizi.keys())
-    lista_numero_servizi = [len(fermate_con_servizi[id]) for id in lista_id_fermate]
+    lista_id_fermate = list(fermate_servizi.keys())
+    lista_numero_servizi = [len(fermate_servizi[id]) for id in lista_id_fermate]
 
     top_id = []
     top_valori = []
@@ -53,7 +53,7 @@ def trova_top_fermate(fermate_con_servizi, top_n=10):
 
 
 def leggi_mappa_id_nome(file_path):
-    """Legge il file dei nodi e restituisce un dizionario ID → nome fermata."""
+    """Legge il file dei nodi e restituisce un dizionario ID = nome fermata."""
     file = open(file_path, "r")
     mappa_id_nome = {}
 
@@ -83,8 +83,8 @@ percorso_collegamenti = "/Users/martaristori/Desktop/Anna/network_temporal_day.c
 percorso_nodi = "/Users/martaristori/Desktop/Anna/network_nodes.csv"
 
 # Elaborazione
-fermate_con_servizi = leggi_collegamenti(percorso_collegamenti)
-top_ids, top_valori = trova_top_fermate(fermate_con_servizi)
+fermate_con_servizi = collegamenti(percorso_collegamenti)
+top_ids, top_valori = top_fermate(fermate_con_servizi)
 id_to_name = leggi_mappa_id_nome(percorso_nodi)
 
 # Output
@@ -338,15 +338,15 @@ def leggi_viaggi_bus(percorso_file):
                 a_fermata = parti[colonne['to_stop_I']]
                 numero_seq = parti[colonne['seq']].strip()
 
-                è_numero = True
+                numero = True
                 j = 0
                 while j < len(numero_seq):
                     c = numero_seq[j]
                     if c < '0' or c > '9':
-                        è_numero = False
+                        numero = False
                     j = j + 1
 
-                if è_numero == True:
+                if numero == True:
                     numero_seq_intero = int(numero_seq)
 
                     # se non esiste ancora la lista, la crea

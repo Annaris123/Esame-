@@ -1,35 +1,37 @@
 def to_float_like(s):
-    i = 0
     parte_intera = ""
     parte_decimale = ""
-    punto = 0
+    punto_trovato = False
 
-    while i < len(s):
-        c = s[i]
-        if c == ".":
-            punto = 1
+    # Costruzione delle due parti
+    for c in s:
+        if c == "." and not punto_trovato:
+            punto_trovato = True
         elif c >= "0" and c <= "9":
-            if punto == 0:
-                parte_intera = parte_intera + c
+            if not punto_trovato:
+                parte_intera += c
             else:
-                parte_decimale = parte_decimale + c
-        i = i + 1
+                parte_decimale += c
 
+    # Mappa da cifra-carattere a numero
+    cifre = {
+        "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
+        "5": 5, "6": 6, "7": 7, "8": 8, "9": 9
+    }
+
+    # Conversione parte intera
     intero = 0
-    j = 0
-    while j < len(parte_intera):
-        intero = intero * 10 + (ord(parte_intera[j]) - ord("0"))
-        j = j + 1
+    for c in parte_intera:
+        intero = intero * 10 + cifre[c]
 
+    # Conversione parte decimale
     decimale = 0
     base = 1
-    k = 0
-    while k < len(parte_decimale):
-        decimale = decimale * 10 + (ord(parte_decimale[k]) - ord("0"))
-        base = base * 10
-        k = k + 1
+    for c in parte_decimale:
+        decimale = decimale * 10 + cifre[c]
+        base *= 10
 
-    return intero + decimale / base
+    return intero + decimale / base if base > 1 else intero
 
 # Leggi fermate da network_nodes.csv
 fermate = {}  # ID -> (x, y)

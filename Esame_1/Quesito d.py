@@ -1,3 +1,5 @@
+import time
+inizio = time.time()
 def conta_luoghi_unici_giorno():
     luoghi = []
     file = open("/Users/martaristori/Desktop/Anna/network_temporal_day.csv", "r")
@@ -99,3 +101,7 @@ def conta_collegamenti_diretti_settimana():
 # Chiamata delle due funzioni
 conta_collegamenti_diretti_giorno()
 conta_collegamenti_diretti_settimana()
+
+fine = time.time()
+print("Tempo impiegato:", fine - inizio, "secondi")
+

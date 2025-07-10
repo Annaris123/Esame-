@@ -220,7 +220,7 @@ print("")
 print("Quesito C:")
 print("")
 
-
+# Riutilizzo la funzione numero_float creata nell'esercizio precedente
 def leggi_fermate(percorso_file):
     fermate = {}
     file = open(percorso_file, 'r')

@@ -118,6 +118,7 @@ def main():
     id_partenza, id_arrivo, tempo, distanza, rapporto = leggi_tempi(percorso_tempi, fermate)
 
     print("Coppia di fermate consecutive con il rapporto distanza/tempo più alto:")
+    print("")
     print("Da", id_partenza, "a", id_arrivo)
 
 

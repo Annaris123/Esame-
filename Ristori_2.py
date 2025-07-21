@@ -3,20 +3,21 @@ import time
 start_tot = time.time()
 start = time.time()
 
-print("Quesito A:")
+print("Quesito A:")  # I 10 luoghi attraversati da più servizi diversi
 print("")
 
 
 def collegamenti(temporal_day):
-    file = open(temporal_day, "r")
-    fermate_servizi = {}
+    file = open(temporal_day, "r")  # Apre un file CSV in modalità lettura
+    fermate_servizi = {}  # Chiave = ID della fermata
+    # Valore = lista dei servizi che passano per quella fermata
 
     file.readline()  # Salta intestazione
     for riga in file:
-        campi = riga.strip().split(",")
-        id_partenza = campi[0]
-        id_arrivo = campi[1]
-        servizio = campi[4]
+        campi = riga.strip().split(",")  # Pulisce e divide la riga in una lista usando la virgola
+        id_partenza = campi[0]  # ID fermata di partenza
+        id_arrivo = campi[1]  # ID fermata di arrivo
+        servizio = campi[4]  # tipo o nome del servizio
 
         # Aggiungi servizio alla fermata di partenza
         if id_partenza not in fermate_servizi:
@@ -95,39 +96,22 @@ print("")
 
 
 def numero_float(s):
-    parte_intera = ""
-    parte_decimale = ""
-    punto_trovato = False
+    cifre = {str(i): i for i in range(10)}
+    intera, _, decimale = s.partition('.')
 
-    # Costruzione delle due parti
-    for punto in s:
-        if punto == "." and not punto_trovato:
-            punto_trovato = True
-        elif punto >= "0" and punto <= "9":
-            if not punto_trovato:
-                parte_intera += punto
-            else:
-                parte_decimale += punto
-
-    # Crea un dizionario che associa le cifre come stringhe ai loro valori numerici
-    cifre = {
-        "0": 0, "1": 1, "2": 2, "3": 3, "4": 4,
-        "5": 5, "6": 6, "7": 7, "8": 8, "9": 9
-    }
-
-    # Conversione parte intera
     intero = 0
-    for converte in parte_intera:
-        intero = intero * 10 + cifre[converte]
+    for c in intera:
+        if c in cifre:
+            intero = intero * 10 + cifre[c]
 
-    # Conversione parte decimale
-    decimale = 0
+    dec = 0
     base = 1
-    for converte in parte_decimale:
-        decimale = decimale * 10 + cifre[converte]
-        base *= 10
+    for c in decimale:
+        if c in cifre:
+            base *= 10
+            dec += cifre[c] / base
 
-    return intero + decimale / base if base > 1 else intero
+    return intero + dec
 
 
 def leggi_fermate(nodes):
@@ -219,6 +203,7 @@ main()
 print("")
 print("Quesito C:")
 print("")
+
 
 # Riutilizzo la funzione numero_float creata nell'esercizio precedente
 def leggi_fermate(percorso_file):
@@ -462,14 +447,14 @@ def main():
     id_massimo = trova_massimo(distanze)
 
     if id_massimo == '':
-        print("Nessuna corsa bus trovata.")
+        print("Errore")
         return
 
     fermate_ordinate = estrai_fermate(viaggi[id_massimo], fermate)
 
-    print("Corsa più lunga:", id_massimo)
+    print("Bus che si è mosso di più in termini di distanze percorse:", id_massimo)
     print("")
-    print("Fermate attraversate (solo nomi):")
+    print("Fermate attraversate:")
 
     indice = 0
     while indice < len(fermate_ordinate):
@@ -554,6 +539,7 @@ n_collegamenti(network_temporal_week, ";", "network_temporal_week")
 end_week = time.time()
 
 end_tot = time.time()
+print("")
 print("Tempo risposte A, B, C: ", end - start)
 print("Tempi risposta D:", (end_day - start_day), "e", (end_week - start_week))
 print("Totale: ", end_tot - start_tot)
